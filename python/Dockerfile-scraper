@@ -1,0 +1,12 @@
+FROM python:3.7-stretch
+
+WORKDIR /root/scraper
+
+COPY . .
+
+RUN pip install --upgrade pip
+RUN python3 -m pip install -r requirements_scraper.txt
+
+CMD ["python3", "main_scraper.py"]
+
+
