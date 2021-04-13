@@ -1,0 +1,51 @@
+FROM ubuntu:bionic
+
+RUN apt-get update
+RUN apt-get clean
+
+# Add a user for running applications.
+RUN useradd apps
+RUN mkdir -p /home/apps && chown apps:apps /home/apps
+
+# Install X packages.
+RUN apt-get install -y x11vnc xvfb fluxbox wget wmctrl software-properties-common systemd
+
+# Set the Chrome repo.
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+
+# Install Chrome.
+RUN apt-get update && apt-get -y install google-chrome-stable
+
+ENV \
+    # Enable detection of running in a container
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    # Enable correct mode for dotnet watch (only mode supported in a container)
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    # Skip extraction of XML docs - generally not useful within an image/container - helps performance
+    NUGET_XMLDOC_MODE=skip 
+
+# Install .NET CLI dependencies
+RUN apt-get install -y --no-install-recommends \
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libicu60 \
+        libssl1.1 \
+        libstdc++6 \
+        zlib1g 
+
+RUN wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb
+
+RUN apt-get update && apt-get install -y apt-transport-https \
+    && apt-get install -y dotnet-sdk-5.0
+
+WORKDIR /app/raw
+COPY scraper/ .
+RUN dotnet publish -c release 
+
+WORKDIR /app/scraper
+COPY /scraper/bin/release/net5.0/ .
+
+CMD ["dotnet", "scraper.dll"]
