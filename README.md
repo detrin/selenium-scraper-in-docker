@@ -7,4 +7,4 @@ Chromedriver with selenium run in chrome docker image. Scraper docker image call
 User agent can be changed in `appsettings.json` and NGROK_AUTH enviroment has to be added in `docker-compose-ngrok.yml` in order to use ngrok.
 
 ## Checkout
-[python scraper](https://github.com/detrin/selenium-scraper-in-docker/python)
+[python scraper](https://github.com/detrin/selenium-scraper-in-docker/tree/main/python)
