@@ -8,3 +8,4 @@ User agent can be changed in `appsettings.json` and NGROK_AUTH enviroment has to
 
 ## Checkout
 [python scraper](https://github.com/detrin/selenium-scraper-in-docker/tree/main/python)
+C# TBD
